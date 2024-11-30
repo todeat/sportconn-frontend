@@ -1,7 +1,17 @@
 import { Plus } from 'lucide-react';
 import { CourtPill } from './CourtPill';
+import LoadingSpinner from '../all/LoadingSpinner';
 
-export const CourtsSection = ({ courts, onAddCourt, onUpdateCourt, onRemoveCourt }) => {
+export const CourtsSection = ({ courts, onAddCourt, onUpdateCourt, onRemoveCourt,loading }) => {
+  
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+  
   return (
     <div className="space-y-4">
       {courts.map((court, index) => (

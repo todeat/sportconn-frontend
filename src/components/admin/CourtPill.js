@@ -24,15 +24,11 @@ export const CourtPill = ({ court, index, onUpdate, onRemove }) => {
     fetchSports();
   }, []);
 
-  if (loading) {
-    return (
-      <PageLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <LoadingSpinner text="Se încarcă informațiile..." />
-        </div>
-      </PageLayout>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //         <LoadingSpinner text="" />
+  //   );
+  // }
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">

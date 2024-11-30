@@ -12,8 +12,8 @@ import { useNavigate } from 'react-router-dom';
 const RegisterFacilityPage = () => {
   const [step, setStep] = useState(1);
   const [cities, setCities] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(true);
   const navigate = useNavigate();
   const [locationInfo, setLocationInfo] = useState({
     locationName: '',
@@ -37,7 +37,7 @@ const RegisterFacilityPage = () => {
       } catch (error) {
         console.error('Error fetching cities:', error);
       } finally {
-        setLoading(false);
+        setLoadingCities(false);
       }
     };
 
@@ -63,11 +63,11 @@ const RegisterFacilityPage = () => {
     ]);
   };
 
-  if (loading) {
+  if (loadingCities && step === 1) {
     return (
       <PageLayout>
-        <div className="flex items-center justify-center">
-          <LoadingSpinner text="" />
+        <div className="min-h-screen flex items-center justify-center">
+          <LoadingSpinner text="Se încarcă..." />
         </div>
       </PageLayout>
     );
@@ -177,7 +177,6 @@ const RegisterFacilityPage = () => {
                       Oraș
                     </label>
                     <div className="relative">
-                      <MapPinned className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5"/>
                       <select
                         className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                         value={locationInfo.city}

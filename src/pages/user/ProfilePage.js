@@ -10,8 +10,13 @@ import UserReservations from '../../components/user/UserReservations';
 import { logout, setError } from '../../store/slices/authSlice';
 
 const ProfilePage = () => {
-  const [userInfo, setUserInfo] = useState(null);
-  const [reservations, setReservations] = useState(null);
+  const [profileData, setProfileData] = useState({
+    userInfo: null,
+    reservations: null
+  });
+
+  // const [userInfo, setUserInfo] = useState(null);
+  // const [reservations, setReservations] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -27,39 +32,35 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const fetchProfileData = async () => {
       try {
+        // Generăm token-ul o singură dată
         const token = await auth.currentUser.getIdToken();
-        const response = await getUserInfo(token);
         
-        if (response && response.userInfo) {
-          setUserInfo(response.userInfo);
-          
-          // Încercăm să obținem rezervările după ce avem userInfo
-          try {
-            const reservationsResponse = await getUserReservations({ token });
-            // Setăm rezervările doar dacă request-ul a avut succes
-            if (reservationsResponse.success) {
-              setReservations(reservationsResponse);
-            } else {
-              // Dacă nu sunt rezervări, setăm un array gol
-              setReservations({ upcoming_reservations: [] });
-            }
-          } catch (reservationError) {
-            setReservations({ upcoming_reservations: [] });
-          }
-        }
+        // Executăm ambele request-uri în paralel
+        const [userInfoResponse, reservationsResponse] = await Promise.all([
+          getUserInfo(token),
+          getUserReservations({ token })
+        ]);
+        
+        setProfileData({
+          userInfo: userInfoResponse.userInfo,
+          reservations: reservationsResponse.success ? reservationsResponse : { upcoming_reservations: [] }
+        });
       } catch (error) {
-        console.error('Error fetching user info:', error);
-        setError('A apărut o eroare la încărcarea datelor. Te rugăm să încerci din nou.');
+        console.error('Error fetching profile data:', error);
+        dispatch(setError('A apărut o eroare la încărcarea datelor. Te rugăm să încerci din nou.'));
+        setProfileData({
+          userInfo: null,
+          reservations: { upcoming_reservations: [] }
+        });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserInfo();
-  }, []);
-
+    fetchProfileData();
+  }, [dispatch]);
 
 
   if (loading) {
@@ -71,6 +72,8 @@ const ProfilePage = () => {
       </PageLayout>
     );
   }
+
+  const { userInfo, reservations } = profileData;
 
   return (
     <PageLayout>

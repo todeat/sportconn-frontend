@@ -4,6 +4,8 @@ import { auth } from "../firebase";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
+// const API_BASE_URL = "http://localhost:3005/api";
+
 export const checkUserExists = async ({ phoneNumber, email }) => {
   try {
     const response = await fetch(`${API_BASE_URL}/user/checkUserExists`, {
