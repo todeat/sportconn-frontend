@@ -31,10 +31,12 @@ const authSlice = createSlice({
       state.phoneNumber = action.payload;
     },
     logout: (state) => {
-      state.user = null;
-      state.isAuthenticated = false;
-      state.phoneNumber = null;
-      state.error = null;
+      // Reset to initial state
+      return initialState;
+    },
+    clearAuthState: (state) => {
+      // Reset everything to initial values
+      return initialState;
     }
   }
 });
@@ -44,7 +46,8 @@ export const {
   setError, 
   setUser, 
   setPhoneNumber, 
-  logout 
+  logout,
+  clearAuthState
 } = authSlice.actions;
 
 // Selectors
@@ -53,5 +56,20 @@ export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectAuthLoading = (state) => state.auth.loading;
 export const selectAuthError = (state) => state.auth.error;
 export const selectPhoneNumber = (state) => state.auth.phoneNumber;
+
+// Thunk pentru logout
+export const logoutUser = () => async (dispatch) => {
+  try {
+    // Clear all auth state
+    dispatch(clearAuthState());
+    
+    // Reset entire store state
+    dispatch({ type: 'RESET_STORE' });
+    
+  } catch (error) {
+    console.error('Logout error:', error);
+    dispatch(setError(error.message));
+  }
+};
 
 export default authSlice.reducer;

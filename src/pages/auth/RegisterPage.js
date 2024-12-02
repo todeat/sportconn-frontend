@@ -103,7 +103,7 @@ const RegisterPage = () => {
         })
       );
   
-      navigate(returnPath || "/");
+      navigate(returnPath || "/profile");
       dispatch(clearReturnPath());
 
     } catch (error) {

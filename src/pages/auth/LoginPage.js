@@ -36,7 +36,7 @@ const LoginPage = () => {
       
       dispatch(setUser(userData));
       
-      navigate(returnPath || "/");
+      navigate(returnPath || "/profile");
       dispatch(clearReturnPath());
 
       

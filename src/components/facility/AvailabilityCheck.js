@@ -85,6 +85,7 @@ const AvailabilityCheck = ({ locationId, sports }) => {
     if (!selectedCourt || !results) return [];
     
     const locationResult = results[0];
+    console.log(locationResult);
     const courtSlots = locationResult.availableSlots.find(
       slot => slot.courtId === selectedCourt
     );

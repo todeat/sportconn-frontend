@@ -7,6 +7,7 @@ import { saveReservation } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { clearPendingBooking, clearReturnPath } from '../../store/slices/bookingSlice';
+import { fetchProfileData, invalidateReservations } from '../../store/slices/profileSlice';
 
 const BookingConfirmationModal = ({ 
   isOpen, 
@@ -25,28 +26,34 @@ const BookingConfirmationModal = ({
   const handleConfirm = async () => {
     try {
       setLoading(true);
-
+      
       const formatToLocalISO = (date) => {
-        const tzOffset = date.getTimezoneOffset() * 60000; // Offset în milisecunde
+        const tzOffset = date.getTimezoneOffset() * 60000;
         const localDate = new Date(date.getTime() - tzOffset);
-        return localDate.toISOString().slice(0, 19); // Păstrează doar `YYYY-MM-DDTHH:mm:ss`
+        return localDate.toISOString().slice(0, 19);
       };
-
+  
       const reservationData = {
         courtId: bookingDetails.courtId,
-        dataOraStart: formatToLocalISO(new Date(bookingDetails.startTime)), // Fără UTC
+        dataOraStart: formatToLocalISO(new Date(bookingDetails.startTime)),
         dataOraEnd: formatToLocalISO(new Date(bookingDetails.endTime)),
         name: `Rezervare ${courtName} ${format(parseISO(bookingDetails.startTime), 'HH:mm')}-${format(parseISO(bookingDetails.endTime), 'HH:mm')}`
       };
   
-  
       const response = await saveReservation(reservationData);
   
       if (response.success) {
+        // Mai întâi invalidăm cache-ul pentru a forța reîncărcarea
+        dispatch(invalidateReservations());
+        
+        // Curățăm starea de booking
         dispatch(clearPendingBooking());
         dispatch(clearReturnPath());
+        
+        // Navigăm către profil
         navigate('/profile');
       }
+  
     } catch (error) {
       console.error('Error saving reservation:', error);
       alert('A apărut o eroare la salvarea rezervării. Vă rugăm să încercați din nou.');
