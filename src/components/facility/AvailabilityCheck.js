@@ -61,7 +61,6 @@ const AvailabilityCheck = ({ locationId, sports }) => {
 
 
 
-
   const isValidInterval = (startTime, minutes) => {
     if (!selectedCourt || !results) return false;
     
@@ -85,7 +84,6 @@ const AvailabilityCheck = ({ locationId, sports }) => {
     if (!selectedCourt || !results) return [];
     
     const locationResult = results[0];
-    console.log(locationResult);
     const courtSlots = locationResult.availableSlots.find(
       slot => slot.courtId === selectedCourt
     );
@@ -173,6 +171,7 @@ const AvailabilityCheck = ({ locationId, sports }) => {
         locationId,
         sportId: selectedSport
       });
+
       
       if (response.success) {
         setResults(response.results);
@@ -222,6 +221,17 @@ const AvailabilityCheck = ({ locationId, sports }) => {
     });
     
     setShowConfirmation(true);
+  };
+
+  const hasAvailableCourts = () => {
+    if (!results || !results[0]?.availableSlots) return false;
+    return results[0].availableSlots.some(court => court.availableSlots.length > 0);
+  };
+
+  // Filter courts to only show those with available slots
+  const getAvailableCourts = () => {
+      if (!results || !results[0]?.availableSlots) return [];
+      return results[0].availableSlots.filter(court => court.availableSlots.length > 0);
   };
 
 
@@ -321,129 +331,127 @@ const AvailabilityCheck = ({ locationId, sports }) => {
             </div>
           </div>
 
-          {/* Rezultate */}
           {results && (
-            <div 
-            ref={resultsRef}
-            className="bg-white rounded-xl shadow-lg overflow-hidden">
-              <div className="p-6 border-b border-gray-200">
-                <h3 className="text-xl font-semibold text-primary">
-                  Rezervă un teren
-                </h3>
-              </div>
-              
-              <div className="p-6 space-y-8">
-                {/* Selector Terenuri */}
-                <div className="space-y-4" ref={courtSelectionRef}>
+  <div 
+    ref={resultsRef}
+    className="bg-white rounded-xl shadow-lg overflow-hidden"
+  >
+    <div className="p-6 border-b border-gray-200">
+      <h3 className="text-xl font-semibold text-primary">
+        {hasAvailableCourts() ? 'Rezervă un teren' : 'Nu există terenuri disponibile'}
+      </h3>
+    </div>
+    
+    <div className="p-6 space-y-8">
+      {hasAvailableCourts() ? (
+        <>
+          {/* Selector Terenuri */}
+          <div className="space-y-4" ref={courtSelectionRef}>
+            <label className="block text-sm font-medium text-gray-700">
+              Alege terenul
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {getAvailableCourts().map(court => (
+                <button
+                  key={court.courtId}
+                  onClick={() => {
+                    setSelectedCourt(court.courtId);
+                    setSelectedStartTime('');
+                    setDuration(60);
+                  }}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    selectedCourt === court.courtId
+                      ? 'border-primary bg-primary/5 text-primary'
+                      : 'border-gray-200 hover:border-primary/50'
+                  }`}
+                >
+                  <div className="font-medium">{court.courtName}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Selectori pentru timp și durată */}
+          {selectedCourt && (
+            <div ref={timeSelectionRef} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Alege terenul
+                  Ora de început
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {results[0].availableSlots.map(court => {
-                    // Găsim prima oră disponibilă pentru acest teren
-                    const firstAvailableSlot = court.availableSlots[0];
-                    const firstAvailableTime = firstAvailableSlot 
-                      ? format(parseISO(firstAvailableSlot.start), 'HH:mm', { locale: ro })
-                      : null;
-
-                    return (
-                      <button
-                        key={court.courtId}
-                        onClick={() => {
-                          setSelectedCourt(court.courtId);
-                          setSelectedStartTime('');
-                          setDuration(60);
-                        }}
-                        className={`p-4 rounded-lg border-2 transition-all ${
-                          selectedCourt === court.courtId
-                            ? 'border-primary bg-primary/5 text-primary'
-                            : 'border-gray-200 hover:border-primary/50'
-                        }`}
-                      >
-                        <div className="font-medium">{court.courtName}</div>
-                        {/* {firstAvailableTime && (
-                          <div className="text-sm text-gray-500 mt-1">
-                            Disponibil începând cu ora {firstAvailableTime}
-                          </div>
-                        )} */}
-                      </button>
-                    );
-                  })}
-                </div>
+                <select
+                  value={selectedStartTime}
+                  onChange={(e) => {
+                    setSelectedStartTime(e.target.value);
+                    setDuration(60);
+                  }}
+                  className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  <option value="">Selectează ora</option>
+                  {getStartTimeOptions().map(time => (
+                    <option key={time} value={time}>
+                      {format(new Date(time), 'HH:mm', { locale: ro })}
+                    </option>
+                  ))}
+                </select>
               </div>
 
-                {/* Selectori pentru timp și durată */}
-                {selectedCourt && (
-                  <div ref={timeSelectionRef} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Ora de început
-                      </label>
-                      <select
-                        value={selectedStartTime}
-                        onChange={(e) => {
-                          setSelectedStartTime(e.target.value);
-                          setDuration(60);
-                        }}
-                        className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                      >
-                        <option value="">Selectează ora</option>
-                        {getStartTimeOptions().map(time => (
-                          <option key={time} value={time}>
-                            {format(new Date(time), 'HH:mm', { locale: ro })}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Durată
-                      </label>
-                      <select
-                        value={duration}
-                        onChange={(e) => setDuration(Number(e.target.value))}
-                        disabled={!selectedStartTime}
-                        className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                      >
-                        {getDurationOptions().map(minutes => (
-                          <option key={minutes} value={minutes}>
-                            {minutes === 60 ? '1 oră' : `${minutes / 60} ore`}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                )}
-
-                {/* Sumar și buton de rezervare */}
-                {selectedStartTime && duration && (
-                  <div 
-                  className="space-y-4"
-                  ref={bookingSummaryRef}
-                  >
-                    <div className="bg-primary/5 p-4 rounded-lg">
-                      <div className="flex items-center space-x-2 text-primary">
-                        <Info className="w-5 h-5 flex-shrink-0" />
-                        <span>
-                          Rezervare pentru {format(new Date(selectedStartTime), 'HH:mm')} - {' '}
-                          {format(addMinutes(new Date(selectedStartTime), duration), 'HH:mm')}
-                        </span>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={handleBooking}
-                      className="w-full py-3 px-4 bg-primary hover:bg-primary-100 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center"
-                    >
-                      <span>Continuă rezervarea</span>
-                      <ArrowRight className="w-5 h-5 ml-2" />
-                    </button>
-                  </div>
-                )}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Durată
+                </label>
+                <select
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                  disabled={!selectedStartTime}
+                  className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                >
+                  {getDurationOptions().map(minutes => (
+                    <option key={minutes} value={minutes}>
+                      {minutes === 60 ? '1 oră' : `${minutes / 60} ore`}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           )}
+
+          {/* Sumar și buton de rezervare */}
+          {selectedStartTime && duration && (
+            <div 
+              className="space-y-4"
+              ref={bookingSummaryRef}
+            >
+              <div className="bg-primary/5 p-4 rounded-lg">
+                <div className="flex items-center space-x-2 text-primary">
+                  <Info className="w-5 h-5 flex-shrink-0" />
+                  <span>
+                    Rezervare pentru {format(new Date(selectedStartTime), 'HH:mm')} - {' '}
+                    {format(addMinutes(new Date(selectedStartTime), duration), 'HH:mm')}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                onClick={handleBooking}
+                className="w-full py-3 px-4 bg-primary hover:bg-primary-100 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center"
+              >
+                <span>Continuă rezervarea</span>
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="text-center py-8">
+          <p className="text-gray-600">
+            Nu există intervale disponibile pentru data selectată. 
+            Vă rugăm să selectați o altă dată.
+          </p>
+        </div>
+      )}
+    </div>
+  </div>
+)}
 
       {confirmationDetails && (
         <BookingConfirmationModal

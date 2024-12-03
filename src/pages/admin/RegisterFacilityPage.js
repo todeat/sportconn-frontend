@@ -19,12 +19,16 @@ const RegisterFacilityPage = () => {
     locationName: '',
     address: '',
     city: '',
-    schedule: Array(7).fill().map((_, index) => ({
-      dayOfWeek: index,
-      oraStart: '08:00',
-      oraEnd: '22:00',
-      isOpen: true
-    }))
+    schedule: [
+      { dayOfWeek: 1, oraStart: '08:00', oraEnd: '22:00', isOpen: true },  // Monday
+      { dayOfWeek: 2, oraStart: '08:00', oraEnd: '22:00', isOpen: true },  // Tuesday
+      { dayOfWeek: 3, oraStart: '08:00', oraEnd: '22:00', isOpen: true },  // Wednesday
+      { dayOfWeek: 4, oraStart: '08:00', oraEnd: '22:00', isOpen: true },  // Thursday
+      { dayOfWeek: 5, oraStart: '08:00', oraEnd: '22:00', isOpen: true },  // Friday
+      { dayOfWeek: 6, oraStart: '08:00', oraEnd: '22:00', isOpen: true },  // Saturday
+      { dayOfWeek: 0, oraStart: '08:00', oraEnd: '22:00', isOpen: true },  // Sunday
+    ]
+
   });
 
   const [courtsInfo, setCourtsInfo] = useState([]);
@@ -47,7 +51,17 @@ const RegisterFacilityPage = () => {
 
   const handleScheduleChange = (index, field, value) => {
     const newSchedule = [...locationInfo.schedule];
-    newSchedule[index] = { ...newSchedule[index], [field]: value };
+    // Convert UI index to actual day of week index
+    const dayOfWeek = index === 6 ? 0 : index + 1;
+    
+    // Find the correct schedule entry by dayOfWeek
+    const scheduleIndex = newSchedule.findIndex(s => s.dayOfWeek === dayOfWeek);
+    newSchedule[scheduleIndex] = { 
+      ...newSchedule[scheduleIndex], 
+      [field]: value,
+      dayOfWeek // Ensure dayOfWeek is preserved
+    };
+    
     setLocationInfo({ ...locationInfo, schedule: newSchedule });
   };
 
@@ -91,14 +105,15 @@ const RegisterFacilityPage = () => {
         pricePerHour: parseFloat(court.pricePerHour)
       }));
       
-      // Call the API to add the pending location
-      const response = await addLocationPending(locationInfo, formattedCourtsInfo, firebaseToken);
-
       
-      console.log('Successfully added location:', response);
+      //Call the API to add the pending location
+      // const response = await addLocationPending(locationInfo, formattedCourtsInfo, firebaseToken);
+      console.log("Schedule", locationInfo.schedule);
       
-      // Navigate to home page
-      navigate('/profile');
+      // console.log('Successfully added location:', response);
+      
+      // // Navigate to home page
+      // navigate('/profile');
       
     } catch (error) {
       console.error('Failed to add location:', error);
@@ -141,9 +156,9 @@ const RegisterFacilityPage = () => {
                 <div className="space-y-4">
                   {/* Location Info Fields */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Numele Locației
-                    </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Numele Locației <span className="text-red-500">*</span>
+                  </label>
                     <div className="relative">
                       <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5"/>
                       <input
@@ -158,7 +173,7 @@ const RegisterFacilityPage = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Adresă
+                      Adresă <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5"/>
@@ -174,7 +189,7 @@ const RegisterFacilityPage = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Oraș
+                      Oraș <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <select
@@ -199,7 +214,12 @@ const RegisterFacilityPage = () => {
                 <div className="flex justify-end mt-8">
                   <button
                     onClick={() => setStep(2)}
-                    className="bg-primary hover:bg-primary-100 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200"
+                    disabled={!locationInfo.locationName || !locationInfo.address || !locationInfo.city}
+                    className={`px-6 py-2 rounded-lg font-medium transition-colors duration-200 ${
+                      !locationInfo.locationName || !locationInfo.address || !locationInfo.city
+                        ? 'bg-gray-300 cursor-not-allowed'
+                        : 'bg-primary hover:bg-primary-100 text-white'
+                    }`}
                   >
                     Continuă
                   </button>
