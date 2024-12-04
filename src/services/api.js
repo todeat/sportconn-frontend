@@ -4,7 +4,7 @@ import { auth } from "../firebase";
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-// const API_BASE_URL = "http://localhost:3005/api";
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_LOCAL
 
 export const checkUserExists = async ({ phoneNumber, email }) => {
   try {
@@ -330,4 +330,28 @@ export async function getFacilities(data) {
   }
 }
 
+
+export async function updateEmail(data) {
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const response = await fetch(`${API_BASE_URL}/user/update-email`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    return await response.json();
+
+  } catch (error) {
+    console.error('Error updating email:', error);
+    throw error;
+  }
+}
 

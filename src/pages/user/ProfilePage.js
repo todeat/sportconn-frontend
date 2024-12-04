@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { User, MapPin, Building2, CheckCircle2, Clock, LogOut } from 'lucide-react';
+import { User, MapPin, Building2, CheckCircle2, Clock, LogOut, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '../../layout/PageLayout';
 import LoadingSpinner from '../../components/all/LoadingSpinner';
@@ -8,10 +8,13 @@ import { auth } from '../../firebase';
 import UserReservations from '../../components/user/UserReservations';
 import { logout, logoutUser, setError } from '../../store/slices/authSlice';
 import { fetchProfileData, selectProfileData } from '../../store/slices/profileSlice';
+import EmailEditModal from '../../components/user/EmailEditModal';
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+
   
   const { 
     userInfo, 
@@ -33,6 +36,10 @@ const ProfilePage = () => {
       console.error("Logout error:", error);
       dispatch(setError(error.message));
     }
+  };
+
+  const handleEmailUpdate = (newEmail) => {
+    dispatch(fetchProfileData(true));
   };
 
   // Show loading state only if we're fetching AND we don't have any cached data
@@ -97,6 +104,13 @@ const ProfilePage = () => {
                 <div className="flex items-center space-x-2 text-gray-600">
                   <MapPin className="h-5 w-5" />
                   <span>{userInfo.email}</span>
+                  {!userInfo.isEmailVerified && (
+                    <Pencil
+                      className="h-4 w-4 text-primary-200 cursor-pointer hover:text-primary transition-colors" 
+                      title="Email neverificat"
+                      onClick={() => setIsEmailModalOpen(true)}
+                    />
+                  )}
                 </div>
                 <div className="flex items-center space-x-2 text-gray-600">
                   <Building2 className="h-5 w-5" />
@@ -188,6 +202,12 @@ const ProfilePage = () => {
             )}
           </div>
         </div>
+        <EmailEditModal
+          isOpen={isEmailModalOpen}
+          onClose={() => setIsEmailModalOpen(false)}
+          currentEmail={userInfo.email}
+          onEmailUpdate={handleEmailUpdate}
+        />
       </div>
     </PageLayout>
   );

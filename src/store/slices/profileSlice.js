@@ -119,10 +119,11 @@ export const fetchProfileData = (forceRefresh = false) => async (dispatch, getSt
         getUserInfo(token),
         getUserReservations({ token })
       ]);
-      
+      console.log(userInfoResponse);
       dispatch(setProfileData({
         userInfo: userInfoResponse.userInfo,
         reservations: reservationsResponse.success ? reservationsResponse : { upcoming_reservations: [] }
+        // reservations: { upcoming_reservations: [] }
       }));
     } catch (error) {
       console.error('Error fetching profile data:', error);
