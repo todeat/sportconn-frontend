@@ -355,3 +355,51 @@ export async function updateEmail(data) {
   }
 }
 
+export async function sendVerificationCode(data) {
+  const token = await auth.currentUser.getIdToken();
+  try {
+    const response = await fetch(`${API_BASE_URL}/email-verification/send-code`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    return await response.json();
+
+  } catch (error) {
+    console.error('Error sending verification code:', error);
+    throw error;
+  }
+}
+
+export async function verifyCode(data) {
+  const token = await auth.currentUser.getIdToken();
+  try {
+    const response = await fetch(`${API_BASE_URL}/email-verification/verify`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    return await response.json();
+
+  } catch (error) {
+    console.error('Error verifying code:', error);
+    throw error;
+  }
+}
+

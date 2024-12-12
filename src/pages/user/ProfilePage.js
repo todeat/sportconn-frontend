@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { User, MapPin, Building2, CheckCircle2, Clock, LogOut, Pencil } from 'lucide-react';
+import { User, MapPin, Building2, CheckCircle2, Clock, LogOut, Pencil, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '../../layout/PageLayout';
 import LoadingSpinner from '../../components/all/LoadingSpinner';
@@ -9,11 +9,13 @@ import UserReservations from '../../components/user/UserReservations';
 import { logout, logoutUser, setError } from '../../store/slices/authSlice';
 import { fetchProfileData, selectProfileData } from '../../store/slices/profileSlice';
 import EmailEditModal from '../../components/user/EmailEditModal';
+import EmailVerificationModal from '../../components/user/EmailVerificationModal';
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
 
   
   const { 
@@ -39,6 +41,11 @@ const ProfilePage = () => {
   };
 
   const handleEmailUpdate = (newEmail) => {
+    dispatch(fetchProfileData(true));
+  };
+
+  const handleVerificationSuccess = () => {
+    // Forțăm reîncărcarea datelor profilului setând forceRefresh la true
     dispatch(fetchProfileData(true));
   };
 
@@ -110,6 +117,7 @@ const ProfilePage = () => {
                       title="Email neverificat"
                       onClick={() => setIsEmailModalOpen(true)}
                     />
+                    
                   )}
                 </div>
                 <div className="flex items-center space-x-2 text-gray-600">
@@ -119,6 +127,30 @@ const ProfilePage = () => {
               </div>
             </div>
           </div>
+
+
+          {!userInfo.isEmailVerified && (
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <Info className="h-5 w-5 text-yellow-400" />
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-700">
+                Pentru a primi notificări cu privire la rezervările tale, te rugăm să-ți confirmi adresa de email.
+              </p>
+              <div className="mt-2">
+                <button
+                  onClick={() => setIsVerificationModalOpen(true)}
+                  className="text-sm font-medium px-4 py-2 rounded-lg border border-yellow-400 text-yellow-700 hover:bg-yellow-100 transition-colors duration-200"
+                >
+                  Confirmă adresa de email
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        )}
 
           {/* Admin Locations Section */}
           {userInfo.adminInfo?.isAdmin && (
@@ -207,6 +239,12 @@ const ProfilePage = () => {
           onClose={() => setIsEmailModalOpen(false)}
           currentEmail={userInfo.email}
           onEmailUpdate={handleEmailUpdate}
+        />
+        <EmailVerificationModal
+          isOpen={isVerificationModalOpen}
+          onClose={() => setIsVerificationModalOpen(false)}
+          email={userInfo.email}
+          onVerificationSuccess={handleVerificationSuccess}
         />
       </div>
     </PageLayout>

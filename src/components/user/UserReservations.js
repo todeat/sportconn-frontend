@@ -19,7 +19,7 @@ const UserReservations = ({ upcomingReservations }) => {
             Găsește terenul perfect pentru tine și fă prima ta rezervare chiar acum!
           </p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/facilities')}
             className="bg-primary hover:bg-primary-100 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 inline-flex items-center"
           >
             Fă o rezervare
