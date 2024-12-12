@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { auth } from "../../firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { Phone } from "lucide-react";
@@ -9,19 +9,36 @@ const SendCodeForm = ({ onCodeSent }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const setupRecaptcha = () => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-        callback: () => {
-          console.log("Recaptcha solved");
-        },
-        "expired-callback": () => {
-          console.log("Recaptcha expired");
-        },
-      });
+  const clearRecaptcha = () => {
+    if (window.recaptchaVerifier) {
+      window.recaptchaVerifier.clear();
+      window.recaptchaVerifier = null;
     }
   };
+
+
+  const setupRecaptcha = () => {
+    // Mai întâi curățăm orice instanță existentă
+    clearRecaptcha();
+    
+    // Apoi creăm una nouă
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+      size: "invisible",
+      callback: () => {
+        console.log("Recaptcha solved");
+      },
+      "expired-callback": () => {
+        console.log("Recaptcha expired");
+        clearRecaptcha();
+      },
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      clearRecaptcha();
+    };
+  }, []);
 
   const sendCode = async () => {
     try {
@@ -50,6 +67,8 @@ const SendCodeForm = ({ onCodeSent }) => {
     } catch (error) {
       console.error("Eroare la trimiterea codului:", error);
       setError(error.message);
+
+      clearRecaptcha();
     } finally {
       setLoading(false);
     }

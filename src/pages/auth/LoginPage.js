@@ -1,6 +1,6 @@
 //src/pages/auth/LoginPage.js
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SendCodeForm from "../../components/auth/SendCodeForm";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +18,16 @@ const LoginPage = () => {
   const dispatch = useDispatch();
 
   const returnPath = useSelector(selectReturnPath);
+
+  useEffect(() => {
+    return () => {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+    };
+  }, []);
+
 
   const verifyCode = async () => {
     if (!confirmationResult) {
