@@ -2,9 +2,11 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { MapPin, Calendar, Clock, Users } from 'lucide-react';
 import PageLayout from '../../layout/PageLayout';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
 
   const features = [
     {
@@ -42,13 +44,13 @@ const HomePage = () => {
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <button 
-                  onClick={() => window.location.href = '/facilities'} 
+                  onClick={() => navigate('/facilities') } 
                   className="w-full sm:w-auto bg-primary hover:bg-primary-100 text-white px-8 py-4 rounded-lg font-semibold transition-colors duration-300"
                 >
                   Rezervă acum
                 </button>
                 <button 
-                  onClick={() => window.location.href = '/register-facility'} 
+                  onClick={() => navigate('/register-facility') } 
                   className="w-full sm:w-auto border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300"
                 >
                   Ai o bază sportivă? Înscrie-o acum
@@ -91,7 +93,7 @@ const HomePage = () => {
             al rezervărilor și o expunere mai mare către clienți potențiali.
           </p>
           <button 
-            onClick={() => window.location.href = '/register-facility'} 
+            onClick={() => navigate('/register-facility') } 
             className="bg-white text-primary hover:bg-primary-400 px-8 py-4 rounded-lg font-semibold transition-colors duration-300"
           >
             Înscrie-ți baza sportivă

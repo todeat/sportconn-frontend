@@ -4,28 +4,22 @@ import { getFacilities } from '../../services/api';
 import { MapPin, ChevronRight } from 'lucide-react';
 import PageLayout from '../../layout/PageLayout';
 import LoadingSpinner from '../../components/all/LoadingSpinner';
+import { fetchFacilities, selectFacilitiesData } from '../../store/slices/facilitiesSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const FacilitiesPage = () => {
-  const [facilities, setFacilities] = useState([]);
+  // const [facilities, setFacilities] = useState([]);
+  const { facilities, isFetching, error } = useSelector(selectFacilitiesData);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchFacilities = async () => {
-      try {
-        const response = await getFacilities({});
-        setFacilities(response.facilities);
-      } catch (error) {
-        console.error('Error fetching facilities:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    dispatch(fetchFacilities());
+  }, [dispatch]);
 
-    fetchFacilities();
-  }, []);
-
-  if (loading) {
+  // Show loading state only if we're fetching AND we don't have any cached data
+  if (isFetching && !facilities) {
     return (
       <PageLayout>
         <div className="min-h-screen flex items-center justify-center">
@@ -34,6 +28,17 @@ const FacilitiesPage = () => {
       </PageLayout>
     );
   }
+
+  if (error && !facilities) {
+    return (
+      <PageLayout>
+        <div className="min-h-screen flex items-center justify-center text-red-600">
+          {error}
+        </div>
+      </PageLayout>
+    );
+  }
+
 
   return (
     <PageLayout variant="default">
@@ -47,7 +52,7 @@ const FacilitiesPage = () => {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {facilities.map((facility) => (
+            {facilities?.map((facility) => (
               <div 
                 key={facility.id}
                 className="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
