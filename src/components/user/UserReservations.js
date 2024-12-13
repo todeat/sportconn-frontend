@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, MapPin, Clock, ChevronRight, Phone } from 'lucide-react';
+import { Calendar, MapPin, Clock, ChevronRight, Phone, Wallet, Tag } from 'lucide-react';
 import { format, parseISO, isPast } from 'date-fns';
 import { ro } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
@@ -82,6 +82,10 @@ const UserReservations = ({ upcomingReservations }) => {
                       {format(parseISO(reservation.dataOraStart), 'HH:mm')} -{' '}
                       {format(parseISO(reservation.dataOraEnd), 'HH:mm')}
                     </span>
+                  </div>
+                  <div className="flex items-center text-primary-100 sm:justify-end">
+                    <Tag className="w-4 h-4 mr-2" />
+                    <span>{reservation.totalPrice} RON</span>
                   </div>
                 </div>
               </div>

@@ -119,7 +119,7 @@ export const fetchProfileData = (forceRefresh = false) => async (dispatch, getSt
         getUserInfo(token),
         getUserReservations({ token })
       ]);
-      console.log(userInfoResponse);
+      // console.log(userInfoResponse);
       dispatch(setProfileData({
         userInfo: userInfoResponse.userInfo,
         reservations: reservationsResponse.success ? reservationsResponse : { upcoming_reservations: [] }

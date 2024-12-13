@@ -24,6 +24,7 @@ const LocationSchedulePage = () => {
         locationId: locationId
       });
       setSchedule(response.schedule);
+      console.log(response.schedule);
     } catch (error) {
       console.error('Error fetching schedule:', error);
     } finally {

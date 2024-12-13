@@ -217,7 +217,8 @@ const AvailabilityCheck = ({ locationId, sports }) => {
       courtId: selectedCourt,
       startTime: selectedStartTime,
       endTime: formatISO(endTime),
-      sportName: selectedCourtInfo.sport.name
+      sportName: selectedCourtInfo.sport.name,
+      pricePerHour: selectedCourtInfo.pricePerHour
     });
     
     setShowConfirmation(true);
@@ -461,6 +462,7 @@ const AvailabilityCheck = ({ locationId, sports }) => {
           locationName={results[0].locationInfo.name}
           courtName={results[0].availableSlots.find(c => c.courtId === selectedCourt)?.courtName}
           sportName={confirmationDetails.sportName}
+          pricePerHour={results[0].availableSlots.find(c => c.courtId === selectedCourt)?.pricePerHour}
         />
       )}
         </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Check, X, Loader2 } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { Calendar, Clock, MapPin, Check, X, Loader2, Tag } from 'lucide-react';
+import { differenceInMinutes, format, parseISO } from 'date-fns';
 import { ro } from 'date-fns/locale';
 import { auth } from '../../firebase';
 import { saveReservation } from '../../services/api';
@@ -15,13 +15,21 @@ const BookingConfirmationModal = ({
   bookingDetails,
   locationName,
   courtName,
-  sportName
+  sportName,
+  pricePerHour
 }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   if (!isOpen) return null;
+
+  const durationInMinutes = differenceInMinutes(
+    new Date(bookingDetails.endTime),
+    new Date(bookingDetails.startTime)
+  );
+  const durationInHours = durationInMinutes / 60;
+  const totalCost = pricePerHour * durationInHours;
 
   const handleConfirm = async () => {
     try {
@@ -37,6 +45,7 @@ const BookingConfirmationModal = ({
         courtId: bookingDetails.courtId,
         dataOraStart: formatToLocalISO(new Date(bookingDetails.startTime)),
         dataOraEnd: formatToLocalISO(new Date(bookingDetails.endTime)),
+        totalCost : totalCost,
         name: `Rezervare ${courtName} ${format(parseISO(bookingDetails.startTime), 'HH:mm')}-${format(parseISO(bookingDetails.endTime), 'HH:mm')}`
       };
   
@@ -110,6 +119,17 @@ const BookingConfirmationModal = ({
                   {format(parseISO(bookingDetails.endTime), 'HH:mm')}
                 </span>
               </div>
+
+              <div className="flex items-center text-primary">
+                <Tag className="w-5 h-5 mr-2" />
+                <div>
+                  <span className="font-medium">{totalCost} RON</span>
+                  <span className="text-sm text-primary-100 ml-1">
+                    ({durationInHours} {durationInHours === 1 ? 'oră' : 'ore'} × {pricePerHour} RON/oră)
+                  </span>
+                </div>
+              </div>
+
             </div>
 
             <div className="flex flex-col gap-3">

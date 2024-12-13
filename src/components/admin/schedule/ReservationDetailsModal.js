@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
-import { Calendar, Clock, X, User, Phone, Mail, ClipboardList, Trash2, Check } from 'lucide-react';
+import { Calendar, Clock, X, User, Phone, Mail, ClipboardList, Trash2, Check, Tag } from 'lucide-react';
 import { deleteReservation } from '../../../services/api';
 
 export const ReservationDetailsModal = ({ isOpen, onClose, reservation, onDeleteSuccess }) => {
@@ -119,6 +119,14 @@ export const ReservationDetailsModal = ({ isOpen, onClose, reservation, onDelete
                 <div>
                   <p className="font-medium">Durată</p>
                   <p className="text-gray-600">{reservation.reservationInfo.duration} ore</p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 text-primary">
+                <Tag className="w-5 h-5" />
+                <div>
+                  <p className="font-medium">Preț Total</p>
+                  <p className="text-gray-600">{reservation.reservationInfo.totalPrice} RON</p>
                 </div>
               </div>
 
