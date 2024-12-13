@@ -117,7 +117,8 @@ export const getCities = async () => {
     }
 }
 
-export const addLocationPending = async (locationData, courtsData, firebaseToken) => {
+export const addLocationPending = async (data) => {
+  const firebaseToken = await auth.currentUser.getIdToken();
   try {
     const response = await fetch(`${API_BASE_URL}/locations/addLocationPending`, {
       method: 'POST',
@@ -125,27 +126,7 @@ export const addLocationPending = async (locationData, courtsData, firebaseToken
         'Authorization': `Bearer ${firebaseToken}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        locationInfo: {
-          locationName: locationData.locationName,
-          address: locationData.address,
-          city: locationData.city,
-          lat: locationData.lat || null,
-          lng: locationData.lng || null,
-          schedule: locationData.schedule.map(schedule => ({
-            dayOfWeek: schedule.dayOfWeek,
-            oraStart: schedule.oraStart,
-            oraEnd: schedule.oraEnd,
-            isOpen: schedule.isOpen
-          }))
-        },
-        courtsInfo: courtsData.map(court => ({
-          name: court.name,
-          sport: court.sport,
-          covered: court.covered,
-          pricePerHour: parseFloat(court.pricePerHour)
-        }))
-      })
+      body: JSON.stringify(data)
     });
 
     if (!response.ok) {
