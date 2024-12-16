@@ -59,7 +59,7 @@ const LocationSchedulePage = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout hideFooter>
       <div className="py-8 px-4 sm:px-6 lg:px-8 bg-primary-400/50">
         <div className="max-w-5xl mx-auto">
           <LocationScheduleComponent

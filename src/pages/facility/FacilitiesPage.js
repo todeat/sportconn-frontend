@@ -6,6 +6,8 @@ import PageLayout from '../../layout/PageLayout';
 import LoadingSpinner from '../../components/all/LoadingSpinner';
 import { fetchFacilities, selectFacilitiesData } from '../../store/slices/facilitiesSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import PlatformGrowthSection from '../../components/all/PlatformGrowthSection';
+import ComingSoonSection from '../../components/all/ComingSoonSection';
 
 const FacilitiesPage = () => {
   // const [facilities, setFacilities] = useState([]);
@@ -99,6 +101,9 @@ const FacilitiesPage = () => {
               </div>
             ))}
           </div>
+          {facilities?.length < 4 && <ComingSoonSection />}
+
+          {/* <PlatformGrowthSection /> */}
         </div>
       </div>
     </PageLayout>

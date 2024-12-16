@@ -83,7 +83,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <PageLayout>
+    <PageLayout hideFooter>
       <div className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Basic Info Card */}

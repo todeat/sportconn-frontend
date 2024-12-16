@@ -70,7 +70,7 @@ const LoginPage = () => {
         className="fixed bottom-4 right-4 transform scale-80 origin-bottom-right"
         style={{ zIndex: 1000 }}
       />
-      <PageLayout>
+      <PageLayout hideFooter>
       <div className="flex items-center justify-center h-[calc(100vh-64px)]" >
         <div className="w-full max-w-md px-8 py-10 mx-4 bg-white rounded-2xl shadow-xl transform transition-all hover:scale-[1.01]">
           <div className="mb-8">

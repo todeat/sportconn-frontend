@@ -1,21 +1,15 @@
-// MobileMenu.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Home, Building2, UserCircle2, LogIn, UserPlus, ChevronRight } from 'lucide-react';
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  const handleNavigation = (path) => {
-    navigate(path);
-    setIsOpen(false);
-  };
-
   // Prevent body scroll when menu is open
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -26,22 +20,46 @@ const MobileMenu = () => {
     };
   }, [isOpen]);
 
+  const handleNavigation = (path) => {
+    setIsOpen(false);
+    navigate(path);
+  };
+
+  const MenuItem = ({ icon: Icon, label, onClick, variant = "default" }) => (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center justify-between p-4 rounded-lg transition-all duration-200 ${
+        variant === "primary"
+          ? "bg-primary text-white hover:bg-primary-100"
+          : "text-primary-100 hover:bg-primary-400/10 hover:text-primary"
+      }`}
+    >
+      <div className="flex items-center space-x-3">
+        <Icon className="h-5 w-5" />
+        <span className="font-medium">{label}</span>
+      </div>
+      <ChevronRight className={`h-5 w-5 transition-transform duration-300 ${
+        variant === "primary" ? "text-white" : "text-primary-100"
+      }`} />
+    </button>
+  );
+
   return (
     <div className="md:hidden">
-      {/* Burger Button - Adjusted z-index and positioning */}
+      {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative z-50 p-2 text-primary hover:bg-primary-400/10 rounded-lg transition-colors"
+        className="relative z-50 p-2 text-primary hover:bg-primary-400/10 rounded-lg transition-all duration-300"
         aria-label={isOpen ? 'Close menu' : 'Open menu'}
       >
         {isOpen ? (
-          <X className="h-6 w-6 transition-transform duration-300" />
+          <X className="h-6 w-6 transition-transform duration-300 rotate-180" />
         ) : (
           <Menu className="h-6 w-6 transition-transform duration-300" />
         )}
       </button>
 
-      {/* Overlay - Adjusted z-index */}
+      {/* Overlay with backdrop blur */}
       <div
         className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 z-40 ${
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -49,59 +67,57 @@ const MobileMenu = () => {
         onClick={() => setIsOpen(false)}
       />
 
-      {/* Menu Panel - Adjusted z-index and padding */}
+      {/* Menu Panel */}
       <div
-        className={`fixed right-0 top-0 h-full w-72 bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-40 ${
+        className={`fixed right-0 top-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-out z-40 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="flex flex-col pt-20 px-6 pb-6 h-full overflow-y-auto">
-          <div className="space-y-1">
-            <button
-              onClick={() => handleNavigation('/')}
-              className="w-full text-left text-primary-100 hover:text-primary hover:bg-primary-400/10 px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200"
-            >
-              Acasă
-            </button>
-            <button
-              onClick={() => handleNavigation('/facilities')}
-              className="w-full text-left text-primary-100 hover:text-primary hover:bg-primary-400/10 px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200"
-            >
-              Baze Sportive
-            </button>
-            
-            {user ? (
-              <>
-                {/* <button
-                  onClick={() => handleNavigation('/dashboard')}
-                  className="w-full text-left text-primary-100 hover:text-primary hover:bg-primary-400/10 px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200"
-                >
-                  Dashboard
-                </button> */}
-                <button
-                  onClick={() => handleNavigation('/profile')}
-                  className="w-full text-left text-primary-100 hover:text-primary hover:bg-primary-400/10 px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200"
-                >
-                  Profil
-                </button>
-              </>
-            ) : (
-              <>
-                <button
+        {/* Menu Items - Adjusted top padding without logo */}
+        <div className="overflow-y-auto h-full pt-20 pb-16 px-4 space-y-2">
+          <MenuItem
+            icon={Home}
+            label="Acasă"
+            onClick={() => handleNavigation('/')}
+          />
+          <MenuItem
+            icon={Building2}
+            label="Baze Sportive"
+            onClick={() => handleNavigation('/facilities')}
+          />
+          
+          {user ? (
+            <>
+              <MenuItem
+                icon={UserCircle2}
+                label="Profil"
+                onClick={() => handleNavigation('/profile')}
+              />
+            </>
+          ) : (
+            <>
+              <div className="pt-4 space-y-2">
+                <MenuItem
+                  icon={LogIn}
+                  label="Conectare"
                   onClick={() => handleNavigation('/login')}
-                  className="w-full text-left text-primary-100 hover:text-primary hover:bg-primary-400/10 px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200"
-                >
-                  Conectare
-                </button>
-                <button
+                />
+                <MenuItem
+                  icon={UserPlus}
+                  label="Înregistrare"
                   onClick={() => handleNavigation('/register')}
-                  className="w-full text-center bg-primary hover:bg-primary-100 text-white mt-4 px-4 py-3 rounded-lg text-base font-medium transition-colors duration-200"
-                >
-                  Înregistrare
-                </button>
-              </>
-            )}
-          </div>
+                  variant="primary"
+                />
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Footer Area */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 bg-white/80 backdrop-blur-sm">
+          <p className="text-xs text-center text-primary-100">
+            © 2024 SportConn. Toate drepturile rezervate.
+          </p>
         </div>
       </div>
     </div>

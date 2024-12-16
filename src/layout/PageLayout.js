@@ -1,10 +1,12 @@
 import React from 'react';
 import Header from '../components/all/Header';
+import Footer from '../components/all/Footer';
 
 const PageLayout = ({ 
   children, 
   variant = 'default',
-  className = ''
+  className = '',
+  hideFooter = false
 }) => {
   const variants = {
     default: 'min-h-screen h-full bg-primary-400',
@@ -13,10 +15,13 @@ const PageLayout = ({
   };
 
   return (
-    <div className={`${variants[variant]} ${className} `}>
-      <Header />
+    <div className="flex flex-col min-h-screen">
+    <Header />
+    <main className={`${variants[variant]} ${className} flex-grow`}>
       {children}
-    </div>
+    </main>
+    {/* {!hideFooter && <Footer />} */}
+  </div>
   );
 };
 
