@@ -132,7 +132,7 @@ const LocationSchedule = ({ onDateChange, schedule, selectedDate, onReservationD
               )}
 
               {/* Time Slots with Enhanced Styling */}
-              <div className="p-6 space-y-4 max-h-[600px] overflow-y-auto custom-scrollbar">
+              <div className="p-6 space-y-4">
                 {schedule[selectedCourt].schedule.map((slot, index) => (
                   <div
                     key={index}
