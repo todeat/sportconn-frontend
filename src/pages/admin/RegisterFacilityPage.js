@@ -1,6 +1,6 @@
 // src/pages/facility/RegisterFacilityPage.js
 import React, { useEffect, useState } from 'react';
-import { MapPin, Building2, MapPinned } from 'lucide-react';
+import { MapPin, Building2, MapPinned, AlertTriangle, ArrowRight } from 'lucide-react';
 import PageLayout from '../../layout/PageLayout';
 import { ScheduleSection } from '../../components/admin/ScheduleSection';
 import { CourtsSection } from '../../components/admin/CourtsSection';
@@ -9,7 +9,7 @@ import LoadingSpinner from '../../components/all/LoadingSpinner';
 import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import { fetchProfileData } from '../../store/slices/profileSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const RegisterFacilityPage = () => {
   const [step, setStep] = useState(1);
@@ -18,6 +18,12 @@ const RegisterFacilityPage = () => {
   const [loadingCities, setLoadingCities] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const userInfo = useSelector((state) => state.profile.userInfo);
+
+  const isEmailVerified = userInfo?.isEmailVerified;
+
+
   const [locationInfo, setLocationInfo] = useState({
     locationName: '',
     address: '',
@@ -35,6 +41,14 @@ const RegisterFacilityPage = () => {
   });
 
   const [courtsInfo, setCourtsInfo] = useState([]);
+
+
+  useEffect(() => {
+    if (!userInfo) {
+      dispatch(fetchProfileData());
+    }
+  }, [userInfo, dispatch]);
+
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -91,6 +105,12 @@ const RegisterFacilityPage = () => {
   }
 
   const handleSubmit = async () => {
+
+    if (!isEmailVerified) {
+      navigate('/profile');
+      return;
+    }
+
     try {
       setSubmitting(true);
       
@@ -135,11 +155,43 @@ const RegisterFacilityPage = () => {
     }
   };
 
+  const renderWarnings = () => {
+    if (!isEmailVerified) {
+      return (
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg mb-6">
+          <div className="flex items-start">
+            <AlertTriangle className="h-5 w-5 text-yellow-400 mt-0.5" />
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-yellow-800">
+                Email neverificat
+              </h3>
+              <div className="mt-2 text-sm text-yellow-700">
+                <p>Pentru a putea înregistra o bază sportivă, trebuie să ai adresa de email verificată.</p>
+                <button
+                  onClick={() => navigate('/profile')}
+                  className="mt-2 inline-flex items-center text-yellow-800 hover:text-yellow-900 font-medium"
+                >
+                  Mergi la profil pentru verificare
+                  <ArrowRight className="ml-1 h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  
+
+
 
   return (
     <PageLayout hideFooter>
       <div className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
+          {renderWarnings()}
           <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
             {/* Progress Steps */}
             <div className="mb-8 flex justify-center">
@@ -264,7 +316,7 @@ const RegisterFacilityPage = () => {
                   </button>
                   <button
                     onClick={handleSubmit}
-                    disabled={submitting || courtsInfo.length === 0}
+                    disabled={submitting || courtsInfo.length === 0 || !isEmailVerified}
                     className="bg-primary hover:bg-primary-100 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {submitting ? (
