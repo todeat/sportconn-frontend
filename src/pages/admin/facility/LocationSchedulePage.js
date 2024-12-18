@@ -12,6 +12,7 @@ const LocationSchedulePage = () => {
   const { locationId } = useParams();
   const [schedule, setSchedule] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [scheduleLoading, setScheduleLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const fetchSchedule = async (date) => {
@@ -24,7 +25,6 @@ const LocationSchedulePage = () => {
         locationId: locationId
       });
       setSchedule(response.schedule);
-      console.log(response.schedule);
     } catch (error) {
       console.error('Error fetching schedule:', error);
     } finally {

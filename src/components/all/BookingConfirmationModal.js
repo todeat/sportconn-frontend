@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Check, X, Loader2, Tag } from 'lucide-react';
+import { Calendar, Clock, MapPin, Check, X, Loader2, Tag, AlertTriangle } from 'lucide-react';
 import { differenceInMinutes, format, parseISO } from 'date-fns';
 import { ro } from 'date-fns/locale';
 import { auth } from '../../firebase';
@@ -19,6 +19,7 @@ const BookingConfirmationModal = ({
   pricePerHour
 }) => {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -31,9 +32,15 @@ const BookingConfirmationModal = ({
   const durationInHours = durationInMinutes / 60;
   const totalCost = pricePerHour * durationInHours;
 
+  const handleClose = () => {
+    setError(""); // Reset error state when closing
+    onClose();
+  };
+
   const handleConfirm = async () => {
     try {
       setLoading(true);
+      setError(""); // Reset any previous errors
       
       const formatToLocalISO = (date) => {
         const tzOffset = date.getTimezoneOffset() * 60000;
@@ -52,29 +59,28 @@ const BookingConfirmationModal = ({
       const response = await saveReservation(reservationData);
   
       if (response.success) {
-        // Mai întâi invalidăm cache-ul pentru a forța reîncărcarea
         dispatch(invalidateReservations());
-        
-        // Curățăm starea de booking
         dispatch(clearPendingBooking());
         dispatch(clearReturnPath());
-        
-        // Navigăm către profil
+        handleClose(); // Use handleClose instead of just onClose
         navigate('/profile');
       }
   
     } catch (error) {
       console.error('Error saving reservation:', error);
-      alert('A apărut o eroare la salvarea rezervării. Vă rugăm să încercați din nou.');
+      if (error.message.includes('suprapunere')) {
+        setError("Nu se poate efectua rezervarea deoarece se suprapune cu o altă rezervare pe care o ai deja în acest interval orar.");
+      } else {
+        setError("A apărut o eroare la salvarea rezervării. Vă rugăm să încercați din nou.");
+      }
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm " onClick={onClose} />
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
       <div className="fixed inset-0 flex items-center justify-center p-4 z-[10000]">
         <div className="bg-white rounded-xl max-w-lg w-full shadow-xl">
           <div className="flex justify-between items-center p-6 border-b border-gray-200">
@@ -83,7 +89,7 @@ const BookingConfirmationModal = ({
               Confirmă rezervarea
             </h3>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
               disabled={loading}
             >
@@ -92,6 +98,13 @@ const BookingConfirmationModal = ({
           </div>
           
           <div className="p-6 space-y-6">
+            {error && (
+              <div className="bg-red-50 text-red-700 p-4 rounded-lg flex items-start">
+                <AlertTriangle className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
+                <p>{error}</p>
+              </div>
+            )}
+
             <div className="bg-primary/5 rounded-lg p-4 space-y-4">
               <div className="flex items-center text-primary">
                 <MapPin className="w-5 h-5 mr-2" />
@@ -129,7 +142,6 @@ const BookingConfirmationModal = ({
                   </span>
                 </div>
               </div>
-
             </div>
 
             <div className="flex flex-col gap-3">
@@ -149,7 +161,7 @@ const BookingConfirmationModal = ({
               </button>
               
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 disabled={loading}
                 className="w-full py-3 px-4 border border-primary text-primary hover:bg-primary/5 font-medium rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
