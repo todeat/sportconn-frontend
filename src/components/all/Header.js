@@ -16,7 +16,7 @@ const Header = () => {
               onClick={() => navigate('/')}
             >
               <span className="text-2xl font-bold text-primary">
-                Sport<span className="text-primary-200">Conn</span>
+                Sport<span className="text-primary-200">Connect</span>
               </span>
             </div>
   
