@@ -2,9 +2,9 @@
 
 import { auth } from "../firebase";
 
-// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-//test
-const API_BASE_URL = process.env.REACT_APP_API_BASE_LOCAL
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_LOCAL
 
 export const checkUserExists = async ({ phoneNumber, email }) => {
   try {
@@ -15,6 +15,7 @@ export const checkUserExists = async ({ phoneNumber, email }) => {
       },
       body: JSON.stringify({ phoneNumber, email }),
     });
+
 
     if (!response.ok) {
       throw new Error('Network response was not ok');
