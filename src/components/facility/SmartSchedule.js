@@ -1,25 +1,22 @@
 import React, { useState, useMemo } from 'react';
 import { Clock, ChevronDown } from 'lucide-react';
+import SmoothCollapse from '../all/SmoothCollapse';
 
 const SmartSchedule = ({ schedule }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const groupedSchedule = useMemo(() => {
-    // Helper function to format time
     const formatTime = (time) => time.slice(0, 5);
 
-    // Helper function to get schedule key
     const getScheduleKey = (day) => 
       day.isOpen ? `${day.oraStart}-${day.oraEnd}` : 'closed';
 
-    // Helper function to format days range
     const formatDayRange = (days) => {
       if (days.length === 1) return getDayName(days[0]);
       if (days.length === 7) return 'Zilnic';
       return `${getDayName(days[0])} - ${getDayName(days[days.length - 1])}`;
     };
 
-    // Group days by schedule
     const groups = schedule.reduce((acc, day) => {
       const key = getScheduleKey(day);
       if (!acc[key]) acc[key] = [];
@@ -27,8 +24,7 @@ const SmartSchedule = ({ schedule }) => {
       return acc;
     }, {});
 
-    // Find consecutive days in each group
-    const groupedDays = Object.entries(groups).map(([scheduleKey, days]) => {
+    return Object.entries(groups).map(([scheduleKey, days]) => {
       const ranges = days.reduce((acc, day, index) => {
         if (index === 0 || day !== days[index - 1] + 1) {
           acc.push([day]);
@@ -48,8 +44,6 @@ const SmartSchedule = ({ schedule }) => {
         } : null
       }));
     }).flat();
-
-    return groupedDays;
   }, [schedule]);
 
   return (
@@ -80,11 +74,7 @@ const SmartSchedule = ({ schedule }) => {
         />
       </button>
 
-      <div 
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'max-h-96' : 'max-h-0'
-        }`}
-      >
+      <SmoothCollapse isOpen={isOpen}>
         <div className="px-6 pb-4 space-y-3">
           {groupedSchedule.map((group, index) => (
             <div 
@@ -103,7 +93,7 @@ const SmartSchedule = ({ schedule }) => {
             </div>
           ))}
         </div>
-      </div>
+      </SmoothCollapse>
     </div>
   );
 };
@@ -111,7 +101,7 @@ const SmartSchedule = ({ schedule }) => {
 // Helper function to get day name
 const getDayName = (dayIndex) => {
   const days = ['Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă', 'Duminică'];
-  return days[dayIndex === 0 ? 6 : dayIndex - 1]; // Adjust for Sunday being 0
+  return days[dayIndex === 0 ? 6 : dayIndex - 1];
 };
 
 export default SmartSchedule;

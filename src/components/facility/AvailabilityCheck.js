@@ -346,11 +346,26 @@ const AvailabilityCheck = ({ locationId, sports }) => {
     <div className="p-6 space-y-8">
       {hasAvailableCourts() ? (
         <>
+          {/* <div className="mb-4">
+      <p className="text-sm text-gray-700">
+        {getAvailableCourts().length === 1
+          ? "S-a găsit 1 teren disponibil. Alege-l!"
+          : `S-au găsit ${getAvailableCourts().length} terenuri disponibile. Alege unul dintre ele!`}
+      </p>
+    </div> */}
+
           {/* Selector Terenuri */}
           <div className="space-y-4" ref={courtSelectionRef}>
-            <label className="block text-sm font-medium text-gray-700">
+            {/* <label className="block text-sm font-medium text-gray-700">
               Alege terenul
-            </label>
+            </label> */}
+            <div className="mb-4">
+      <p className="text-sm text-gray-700">
+        {getAvailableCourts().length === 1
+          ? "S-a găsit 1 teren disponibil."
+          : `S-au găsit ${getAvailableCourts().length} terenuri disponibile. Alege unul dintre ele:`}
+      </p>
+    </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {getAvailableCourts().map(court => (
                 <button

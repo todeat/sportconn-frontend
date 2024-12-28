@@ -1,24 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
-import { FileText } from 'lucide-react';
+import { ChevronDown, FileText } from 'lucide-react';
 
 const LocationDescription = ({ description }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detectăm dacă suntem pe mobile
   useEffect(() => {
     const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 640); // 640px este breakpoint-ul pentru sm în Tailwind
+      setIsMobile(window.innerWidth < 640);
     };
 
-    // Verificăm inițial
     checkIfMobile();
-
-    // Adăugăm listener pentru redimensionare
     window.addEventListener('resize', checkIfMobile);
 
-    // Cleanup
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
@@ -26,7 +20,6 @@ const LocationDescription = ({ description }) => {
 
   return (
     <div className="mt-6">
-      {/* Butonul de expandare este vizibil doar pe mobile */}
       {isMobile && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
@@ -34,7 +27,7 @@ const LocationDescription = ({ description }) => {
         >
           <FileText className="w-5 h-5" />
           <span>
-            {isExpanded ? 'Ascunde descrierea' : 'Vezi descrierea'}
+            Descrizere
           </span>
           <ChevronDown 
             className={`w-5 h-5 transition-transform duration-300 ${
@@ -45,15 +38,14 @@ const LocationDescription = ({ description }) => {
       )}
       
       <div
-        className={`mt-4 text-primary-400 sm:max-w-3xl ${
-          isMobile
-            ? `overflow-hidden transition-all duration-300 ease-in-out ${
-                isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-              }`
-            : 'block' // Pe desktop este mereu vizibil
-        }`}
+        className={`
+          overflow-hidden transition-all duration-300 ease-in-out
+          ${isMobile ? (isExpanded ? 'max-h-96 mt-4 opacity-100' : 'max-h-0 opacity-0') : 'mt-4 block'}
+        `}
       >
-        <p>{description}</p>
+        <div className="text-primary-400 sm:max-w-3xl">
+          <p className="whitespace-pre-wrap">{description}</p>
+        </div>
       </div>
     </div>
   );
