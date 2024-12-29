@@ -43,7 +43,7 @@ const CourtsDisplay = ({ courts }) => {
   return (
     <div className="relative">
       {/* Buton de scroll stânga */}
-      {canScrollLeft && (
+      {/* {canScrollLeft && (
         <button 
           onClick={() => scrollToDirection('left')}
           className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-200"
@@ -51,7 +51,7 @@ const CourtsDisplay = ({ courts }) => {
         >
           <ChevronLeft className="w-6 h-6 text-primary" />
         </button>
-      )}
+      )} */}
 
       {/* Container pentru carduri cu scroll orizontal */}
       <div
@@ -107,7 +107,7 @@ const CourtsDisplay = ({ courts }) => {
       </div>
 
       {/* Buton de scroll dreapta */}
-      {canScrollRight && (
+      {/* {canScrollRight && (
         <button 
           onClick={() => scrollToDirection('right')}
           className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-200"
@@ -115,7 +115,7 @@ const CourtsDisplay = ({ courts }) => {
         >
           <ChevronRight className="w-6 h-6 text-primary" />
         </button>
-      )}
+      )} */}
     </div>
   );
 };
